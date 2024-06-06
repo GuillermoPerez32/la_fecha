@@ -22,7 +22,9 @@ final List<String> months = [
   'Diciembre'
 ];
 
-final currentYear = DateTime.now().year;
+final currentDate = DateTime.now();
+final currentYear = currentDate.year;
+final currentMonth = currentDate.month;
 
 String dateFormatter(String date) {
   final List<String> dateParts = date.split('-');

@@ -14,6 +14,32 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Event> events = [];
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: currentDate,
+      firstDate: DateTime(currentYear, 1, 1),
+      lastDate: DateTime(currentYear, 12, 31),
+    );
+    if (picked != null) {
+      final formattedSelectedDate = '${picked.day}-${picked.month}';
+      if (events.isEmpty) {
+        return;
+      }
+      final event =
+          events.where((element) => element.date == formattedSelectedDate);
+      if (event.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No hay eventos para esta fecha'),
+          ),
+        );
+        return;
+      }
+      context.go('/$formattedSelectedDate', extra: event.first);
+    }
+  }
+
   @override
   void initState() {
     fetchEvents().then((value) {
@@ -29,6 +55,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Eventos'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.calendar_month),
+              onPressed: () => _selectDate(context),
+            )
+          ],
         ),
         body: ListView.builder(
           itemCount: events.length,
