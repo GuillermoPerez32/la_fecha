@@ -11,6 +11,11 @@ class App extends StatelessWidget {
       routerConfig: router,
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+        ),
+      ),
     );
   }
 }

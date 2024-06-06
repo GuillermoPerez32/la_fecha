@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:la_fecha/core/utils/date.dart';
 import 'package:la_fecha/data/models/event.dart';
 
 class EventDetailPage extends StatelessWidget {
@@ -8,6 +9,27 @@ class EventDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(dateFormatter(event.date)),
+      ),
+      body: ListView(
+        children: [
+          Text(
+            event.event,
+            style: const TextStyle(fontSize: 24),
+            textAlign: TextAlign.center,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+            child: Text(
+              event.details,
+              style: const TextStyle(fontSize: 18),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

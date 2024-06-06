@@ -34,13 +34,49 @@ class _HomePageState extends State<HomePage> {
           itemCount: events.length,
           itemBuilder: (context, index) {
             Event event = events[index];
-            return Card(
+            final component = Card(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               child: ListTile(
-                title: Text(dateFormatter(event.date)),
-                subtitle: Text(event.event),
+                title: Text(dateFormatter(event.date),
+                    style: const TextStyle(fontSize: 18)),
+                subtitle:
+                    Text(event.event, style: const TextStyle(fontSize: 16)),
                 onTap: () => context.go('/${event.date}', extra: event),
               ),
             );
+            if (index != 0 &&
+                event.date.split('-')[1] !=
+                    events[index - 1].date.split('-')[1]) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Text(
+                      months[int.parse(event.date.split('-')[1]) - 1],
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                  ),
+                  component,
+                ],
+              );
+            }
+
+            if (index == 0) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Text(
+                      months[int.parse(event.date.split('-')[1]) - 1],
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                  ),
+                  component,
+                ],
+              );
+            }
+
+            return component;
           },
         ));
   }
