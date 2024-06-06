@@ -1,11 +1,11 @@
 final List<String> days = [
-  'Domingo',
   'Lunes',
   'Martes',
   'Miércoles',
   'Jueves',
   'Viernes',
-  'Sábado'
+  'Sábado',
+  'Domingo',
 ];
 final List<String> months = [
   'Enero',
