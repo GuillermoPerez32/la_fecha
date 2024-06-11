@@ -21,6 +21,15 @@ class EventDetailPage extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: FadeInImage(
+              image: NetworkImage(event.imagen),
+              height: 150,
+              fit: BoxFit.cover,
+              placeholder: AssetImage('assets/loading.webp'),
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
             child: Text(
               event.details,

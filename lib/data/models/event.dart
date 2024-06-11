@@ -10,22 +10,26 @@ class Event {
   final String date;
   final String event;
   final String details;
+  final String imagen;
 
   Event({
     required this.date,
     required this.event,
     required this.details,
+    required this.imagen,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) => Event(
         date: json["date"],
         event: json["event"],
         details: json["details"],
+        imagen: json["imagen"],
       );
 
   Map<String, dynamic> toJson() => {
         "date": date,
         "event": event,
         "details": details,
+        "imagen": imagen,
       };
 }
