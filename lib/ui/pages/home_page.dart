@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Eventos'),
+          title: Text('Días Internacionales'),
           actions: [
             IconButton(
               icon: const Icon(Icons.calendar_month),
