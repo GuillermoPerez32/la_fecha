@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:la_fecha/core/utils/date.dart';
 import 'package:la_fecha/data/models/event.dart';
@@ -36,6 +37,10 @@ class _HomePageState extends State<HomePage> {
             content: Text('No hay eventos para esta fecha'),
           ),
         );
+        return;
+      }
+      if (event.length > 1) {
+        showMoreEventsDialog(event);
         return;
       }
       context.go('/$formattedSelectedDate', extra: event.first);
@@ -138,6 +143,40 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  void showMoreEventsDialog(Iterable<Event> events) {
+    final eventTiles = events
+        .map(
+          (e) => Card(
+            margin: EdgeInsets.symmetric(vertical: 8),
+            child: ListTile(
+              title: Text(e.event),
+              onTap: () {
+                final formattedDate = e.date.split('-');
+                final day = formattedDate[0];
+                final month = formattedDate[1];
+                context.go('/$day-$month', extra: e);
+              },
+            ),
+          ),
+        )
+        .toList();
+    AlertDialog alert = AlertDialog(
+      title: Text("Escoja el evento"),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: eventTiles,
+      ),
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
     );
   }
 }
