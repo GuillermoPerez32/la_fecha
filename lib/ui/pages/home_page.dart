@@ -13,6 +13,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Event> events = [];
+  List<Event> filteredEvents = [];
+  final TextEditingController _searchController = TextEditingController();
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -53,63 +55,89 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Días Internacionales'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.calendar_month),
-              onPressed: () => _selectDate(context),
-            )
+      appBar: AppBar(
+        title: Text('Días Internacionales'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_month),
+            onPressed: () => _selectDate(context),
+          )
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  filteredEvents = events
+                      .where((element) => element.event
+                          .toLowerCase()
+                          .contains(value.toLowerCase()))
+                      .toList();
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Buscar evento',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            SizedBox(height: 16.0), // Espacio entre el TextField y la lista
+            Expanded(
+              child: ListView.builder(
+                itemCount: _searchController.text.isNotEmpty
+                    ? filteredEvents.length
+                    : events.length,
+                itemBuilder: (context, index) {
+                  Event event = _searchController.text.isNotEmpty
+                      ? filteredEvents[index]
+                      : events[index];
+                  final component = Card(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    child: ListTile(
+                      title: Text(dateFormatter(event.date),
+                          style: const TextStyle(fontSize: 18)),
+                      subtitle: Text(event.event,
+                          style: const TextStyle(fontSize: 16)),
+                      onTap: () => context.go('/${event.date}', extra: event),
+                    ),
+                  );
+                  if (index != 0 &&
+                      event.date.split('-')[1] !=
+                          events[index - 1].date.split('-')[1]) {
+                    return Column(
+                      children: [
+                        Text(
+                          months[int.parse(event.date.split('-')[1]) - 1],
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        component,
+                      ],
+                    );
+                  }
+
+                  if (index == 0) {
+                    return Column(
+                      children: [
+                        Text(
+                          months[int.parse(event.date.split('-')[1]) - 1],
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        component,
+                      ],
+                    );
+                  }
+
+                  return component;
+                },
+              ),
+            ),
           ],
         ),
-        body: ListView.builder(
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            Event event = events[index];
-            final component = Card(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: ListTile(
-                title: Text(dateFormatter(event.date),
-                    style: const TextStyle(fontSize: 18)),
-                subtitle:
-                    Text(event.event, style: const TextStyle(fontSize: 16)),
-                onTap: () => context.go('/${event.date}', extra: event),
-              ),
-            );
-            if (index != 0 &&
-                event.date.split('-')[1] !=
-                    events[index - 1].date.split('-')[1]) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Text(
-                      months[int.parse(event.date.split('-')[1]) - 1],
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ),
-                  component,
-                ],
-              );
-            }
-
-            if (index == 0) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Text(
-                      months[int.parse(event.date.split('-')[1]) - 1],
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ),
-                  component,
-                ],
-              );
-            }
-
-            return component;
-          },
-        ));
+      ),
+    );
   }
 }
