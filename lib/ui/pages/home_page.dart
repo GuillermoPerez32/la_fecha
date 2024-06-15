@@ -16,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   List<Event> events = [];
   List<Event> filteredEvents = [];
   final TextEditingController _searchController = TextEditingController();
+  final String expandedMonth = 'Enero';
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -91,59 +92,58 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 16.0), // Espacio entre el TextField y la lista
             Expanded(
-              child: ListView.builder(
-                itemCount: _searchController.text.isNotEmpty
-                    ? filteredEvents.length
-                    : events.length,
-                itemBuilder: (context, index) {
-                  Event event = _searchController.text.isNotEmpty
-                      ? filteredEvents[index]
-                      : events[index];
-                  final component = Card(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    child: ListTile(
-                      title: Text(dateFormatter(event.date),
-                          style: const TextStyle(fontSize: 18)),
-                      subtitle: Text(event.event,
-                          style: const TextStyle(fontSize: 16)),
-                      onTap: () => context.go('/${event.date}', extra: event),
+              child: ListView(
+                children: eventsByMonth().entries.map((entry) {
+                  final month = entry.key;
+                  final events = entry.value;
+                  return ExpansionTile(
+                    title: Text(
+                      months[int.parse(month) - 1],
+                      style: const TextStyle(fontSize: 24),
                     ),
+                    children: [
+                      Text(
+                        months[int.parse(month) - 1],
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                      ...events.map(
+                        (event) => Card(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          child: ListTile(
+                            title: Text(dateFormatter(event.date),
+                                style: const TextStyle(fontSize: 18)),
+                            subtitle: Text(event.event,
+                                style: const TextStyle(fontSize: 16)),
+                            onTap: () =>
+                                context.go('/${event.date}', extra: event),
+                          ),
+                        ),
+                      ),
+                    ],
                   );
-                  if (index != 0 &&
-                      event.date.split('-')[1] !=
-                          events[index - 1].date.split('-')[1]) {
-                    return Column(
-                      children: [
-                        Text(
-                          months[int.parse(event.date.split('-')[1]) - 1],
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                        component,
-                      ],
-                    );
-                  }
-
-                  if (index == 0) {
-                    return Column(
-                      children: [
-                        Text(
-                          months[int.parse(event.date.split('-')[1]) - 1],
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                        component,
-                      ],
-                    );
-                  }
-
-                  return component;
-                },
+                }).toList(),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Map<String, List<Event>> eventsByMonth() {
+    List<Event> rawEvents =
+        _searchController.text.isNotEmpty ? filteredEvents : events;
+    final Map<String, List<Event>> eventsByMonth = {};
+    for (final event in rawEvents) {
+      final month = event.date.split('-')[1];
+      if (eventsByMonth.containsKey(month)) {
+        eventsByMonth[month]!.add(event);
+      } else {
+        eventsByMonth[month] = [event];
+      }
+    }
+    return eventsByMonth;
   }
 
   void showMoreEventsDialog(Iterable<Event> events) {
