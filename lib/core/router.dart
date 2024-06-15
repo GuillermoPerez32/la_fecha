@@ -15,6 +15,7 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: ':id',
           builder: (BuildContext context, GoRouterState state) {
+            print(state.extra);
             final Event event = state.extra as Event;
             return EventDetailPage(
               event: event,
